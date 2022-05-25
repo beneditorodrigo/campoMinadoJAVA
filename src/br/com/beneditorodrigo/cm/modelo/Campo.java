@@ -3,6 +3,8 @@ package br.com.beneditorodrigo.cm.modelo;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.beneditorodrigo.cm.excecao.ExplosaoException;
+
 public class Campo {
 
 	private final int linha;
@@ -37,5 +39,45 @@ public class Campo {
 		} else {
 			return false;
 		}
+	}
+
+	void alternarMarcacao() {
+		if (!aberto) {
+			marcado = !marcado;
+		}
+	}
+
+	boolean abrir() {
+		if (!aberto && !marcado) {
+			aberto = true;
+
+			if (minado) {
+				throw new ExplosaoException();
+			}
+
+			if (vizinhancaSegura()) {
+				vizinhos.forEach(v -> v.abrir());
+			}
+
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	boolean vizinhancaSegura() {
+		return vizinhos.stream().noneMatch(v -> v.minado);
+	}
+	
+	void minar() {
+		minado = true;
+	}
+	
+	public boolean isMarcado() {
+		return marcado;
+	}
+
+	public boolean isAberto() {
+		return aberto;
 	}
 }
